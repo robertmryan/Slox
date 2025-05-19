@@ -26,21 +26,22 @@ struct ContentView: View {
                 Text(error.localizedDescription)
             }
             HStack {
-                TextField("Enter command", text: $input)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .onSubmit {
-                        isButtonTapped = true
-                    }
-
+                VStack {
+                    Text("Enter Lox code below:")
+                    TextEditor(text: $input)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
                 Button("Go") {
                     isButtonTapped = true
                 }
                 .disabled(isRunning)
 
-                Text(output)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .foregroundStyle(input == priorInput ? Color.primary : .secondary)
+                ScrollView {
+                    Text(output)
+                        .foregroundStyle(input == priorInput ? Color.primary : .secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .task {
@@ -64,8 +65,8 @@ private extension ContentView {
         isRunning = true
 
         do {
-            for try await line in await lox.results(for: input) {
-                output += line + "\n"
+            for try await token in await lox.results(for: input) {
+                output += "\(token)\n"
             }
         } catch {
             self.error = error

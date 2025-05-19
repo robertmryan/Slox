@@ -2,7 +2,7 @@
 
 This is a Swift rendition of Robert Nystrom’s [Crafting Interpreters](https://craftinginterpreters.com)’s Lox.
 
-As it stands, this version 0.1 workspace is just the initial template for Lox, not yet a functional interpreter.
+As it stands, this version 0.2 does tokenization, but it is not yet a functional interpreter.
 
 This Xcode Workspace consists of three projects:
 

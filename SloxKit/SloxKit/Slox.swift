@@ -1,5 +1,5 @@
 //
-//  SloxKit.swift
+//  Slox.swift
 //  SloxKit
 //
 //  Created by Robert Ryan on 5/18/25.
@@ -12,8 +12,15 @@ public actor Slox {
         // This is intentionally blank
     }
 
-    public func results(for line: String) -> any AsyncSequence<String, any Error> {
-        tokens(for: line) // for now, just return tokens
+    public func results(for line: String) -> any AsyncSequence<Token, any Error> {
+        let scanner = Scanner(source: line)
+        let tokens = scanner.scanTokens()
+        return AsyncThrowingStream { continuation in
+            for token in tokens {
+                continuation.yield(token)
+            }
+            continuation.finish()
+        }
     }
 }
 
@@ -39,6 +46,22 @@ private extension Slox {
                     task.cancel()
                 }
             }
+        }
+    }
+}
+
+public enum SloxError: Error {
+    case parse(line: Int, message: String)
+    case unexpectedCharacter(line: Int)
+    case unterminatedString(line: Int)
+}
+
+extension SloxError: LocalizedError {
+    public var errorDescription: String? {
+        return switch self {
+            case .parse(line: let line, message: let message): "Parse error at line \(line): \(message)"
+            case .unexpectedCharacter(line: let line):         "Unexpected character at line \(line)"
+            case .unterminatedString(line: let line):          "Unterminated string at line \(line)"
         }
     }
 }

@@ -15,7 +15,12 @@ struct SloxCLI {
             try await run()
         } catch {
             print(error.localizedDescription)
-            exit(EXIT_FAILURE)
+
+            if error is SloxError {
+                exit(EX_DATAERR)   // Nystrom hardcoded 65, but perhaps we translate that to sysexits.h code
+            } else {
+                exit(EXIT_FAILURE)
+            }
         }
     }
 }
